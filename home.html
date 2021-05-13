@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <style>
+        table {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        th {
+            font-weight: 500;
+            font-size: 15px !important;
+            color: #fff;
+            background: #fff;
+        }
+
+        tr:nth-child(odd) {
+            background: #f0f2f5;
+        }
+
+        th {
+            background: #2AB473 !important;
+            padding: 10px 0;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        td {
+            padding: 5px 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>หน้าแรก</h1>
+
+    <h2 id="showUsername"></h2>
+
+    <button onclick="logout()">Logout</button>
+
+    <table id="table-product">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>ชื่อสินค้า</th>
+                <th>Price</th>
+                <th>Type</th>
+            </tr>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const usernameLocalStorage = localStorage.getItem('username')
+        console.log(usernameLocalStorage);
+        document.getElementById('showUsername').innerHTML = usernameLocalStorage
+
+        function logout() {
+            localStorage.removeItem('username')
+            window.location = '/login.html'
+        }
+
+
+        // ดึงข้อมูลสินค้าจากDatabase
+        function productService() {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await axios.get('http://localhost:5000/products')
+                    return resolve(response)
+                } catch (error) {
+                    return resolve(error)
+                }
+            })
+        }
+        getAllProducts() //เรียกใช้function getAllProducts
+        async function getAllProducts() {
+            try {
+                const response = await productService()
+                console.log(response.data);
+
+                let tblBody = document.getElementById("tbody");
+                for (let item of response.data) {
+                    var tBodyTr = document.createElement("tr")
+
+                    var tdId = document.createElement("td")
+                    var tdName = document.createElement("td")
+                    var tdPrice = document.createElement("td")
+                    var tdType = document.createElement("td")
+
+                    let textTdId = document.createTextNode(item.id);
+                    let textTdName = document.createTextNode(item.product_name);
+                    let textTdPrice = document.createTextNode(item.price);
+                    let textTdType = document.createTextNode(item.type_name);
+
+                    tdId.appendChild(textTdId);
+                    tdName.appendChild(textTdName);
+                    tdPrice.appendChild(textTdPrice);
+                    tdType.appendChild(textTdType);
+
+                    tBodyTr.appendChild(tdId)
+                    tBodyTr.appendChild(tdName)
+                    tBodyTr.appendChild(tdPrice)
+                    tBodyTr.appendChild(tdType)
+
+                    tblBody.appendChild(tBodyTr)
+                }
+
+            } catch (error) {
+                console.log(error);
+                alert('Error')
+            }
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>

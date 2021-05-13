@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+    <h3>Login</h3>
+    <input type="text" id="username">
+    <input type="text" id="password">
+    <button onclick="submitLogin()">Submit</button>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        const usernameLocalStorage = localStorage.getItem('username')
+        if (usernameLocalStorage) {
+            window.location = '/home.html'
+        }
+        function loginService(username,password) {
+            return new Promise(async (resolve,reject) => {
+                try {
+                    const response = await axios.post('http://localhost:5000/login', {username, password})
+                    return resolve(response)
+                } catch (error) {
+                    return reject(error)
+                }
+            })
+        }
+        async function submitLogin() {
+            try {
+            const username = document.getElementById("username").value
+            const password = document.getElementById("password").value
+            const response = await loginService(username,password)
+            console.log(response.data.username);
+            alert(response.data.username)
+            localStorage.setItem('username', response.data.username)
+            window.location = '/home.html'
+            } catch (error) {
+                console.log(error.response.data);
+                alert(error.response.data.message)
+            }
+            
+        }
+    </script>
+</body>
+</html>
